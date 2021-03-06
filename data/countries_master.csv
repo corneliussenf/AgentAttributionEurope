@@ -1,0 +1,36 @@
+country,iso_code,country_name,project_id,country_area_km2
+Albania,AL,albania,1,28786.07
+Austria,AT,austria,2,83988.21
+Belarus,BY,belarus,3,207575.27
+Belgium,BE,belgium,4,30587.77
+Bosnia and Herzegovina,BA,bosniaherzegovina,5,51030.41
+Bulgaria,BG,bulgaria,6,110953.91
+Croatia,HR,croatia,7,57017.2
+Czech Republic,CZ,czechia,8,78842.74
+Denmark,DK,denmark,9,43501.59
+Estonia,EE,estonia,10,45405.32
+Finland,FI,finland,11,338434
+France,FR,france,12,549006.24
+Germany,DE,germany,13,357454.99
+Greece,GR,greece,14,124885.96
+Hungary,HU,hungary,15,93001.36
+Ireland,IE,ireland,16,70243.37
+Italy,IT,italy,17,300887.48
+Latvia,LV,latvia,18,64549.9
+Lithuania,LT,lithuania,19,64941.46
+Moldova,MD,moldova,20,33847.27
+Montenegro,ME,montenegro,21,13764.39
+Netherlands,NL,netherlands,22,35162.75
+Norway,NO,norway,23,311654.47
+Poland,PL,poland,24,311759.97
+Portugal,PT,portugal,25,88700.69
+Romania,RO,romania,26,238289.83
+Serbia,RS,serbia,28,88372.28
+Slovakia,SK,slovakia,29,49036.66
+Slovenia,SI,slovenia,30,20221.19
+Spain,ES,spain,31,498518.52
+Sweden,SE,sweden,32,450040.79
+Switzerland,CH,switzerland,33,41239.21
+The Former Yugoslav Republic of Macedonia,MK,macedonia,34,25438.31
+Ukraine,UA,ukraine,35,597120.26
+United Kingdom,GB,unitedkingdom,36,245164.44

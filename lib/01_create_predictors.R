@@ -14,13 +14,15 @@ write("TMP = temp", file = file.path('~/.Renviron'))
 source("lib/raster_as_data_table.R")
 Rcpp::sourceCpp('lib/ngb_rcpp.cpp')
 
+distmap_path <- "/home/csenf/Projects/mapping/results/version1.1"
+
 # Settings ----------------------------------------------------------------
 
-#cntr <- "finland"
-countries <- list.files("/home/csenf/Projects/mapping/results/maps/")
+#cntr <- "czechia"
+countries <- list.files(distmap_path)
 years <- 1986:2016
 radius <- 5000
-grouping <- FALSE
+grouping <- TRUE
 
 ### Check if country was already processed, otherwise switch to next
 
@@ -41,7 +43,7 @@ if (grouping) {
   
   tictoc::tic()
   
-  dist_map <- raster(paste0("/home/csenf/Projects/mapping/results/maps/", cntr, "/disturbance_year_filtered_", cntr, ".tif"))
+  dist_map <- raster(paste0(distmap_path, "/", cntr, "/disturbance_year_", cntr, ".tif"))
   
   years_reclass <- raster::unique(dist_map)
   

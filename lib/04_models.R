@@ -48,94 +48,24 @@ save(dat_mod_sample, file = "temp/dat_mod_sample.RData")
 
 ### Plots
 
-dat_mod_sample %>% 
+p <- dat_mod_sample %>% 
   gather(key = predictor, value = value, -(patch:y), -(agent:country)) %>%
+  filter(predictor %in% c("area", "frac", "magnitude.NBR", "n_patches", "perc_t0", "perc_tminus1", "perc_tplus1", "perimenter", "pre.NBR", "rate.NBR")) %>%
+  mutate(agnt = ifelse(agent == "breakage", "Storm", ifelse(agent == "background", "Other", "Fire"))) %>%
   ggplot(., aes(x = agent, y = value, fill = agent)) +
   geom_boxplot() +
   facet_wrap(~predictor, scales = "free") +
   scale_y_log10() +
-  scale_fill_manual(values = c("grey", "#004488", "#BB5566"))
-
-dat_mod_sample %>%
-  gather(key = predictor, value = value, -(patch:y), -(agent:country)) %>%
-  filter(predictor %in% c("area", "frac", "perimeter")) %>%
-  mutate(predictor = case_when(
-    predictor == "area" ~ "Size (ha)",
-    predictor == "frac" ~ "Fractional dimension",
-    predictor == "perimeter" ~ "Perimenter (m)"
-  )) %>%
-  mutate(agent = case_when(
-    agent == "background" ~ "Background",
-    agent == "breakage" ~ "Breakage",
-    agent == "fire" ~ "Fire"
-  )) %>%
-  ggplot(., aes(x = value, fill = agent)) +
-  geom_density(alpha = 0.3, adjust = 2) +
-  facet_wrap(~predictor, scales = "free", ncol = 3) +
-  scale_x_log10(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0)) +
   scale_fill_manual(values = c("grey", "#004488", "#BB5566")) +
+  labs(x = NULL, y = "Value", fill = "Agent") +
   theme_classic() +
-  labs(x = NULL, 
-       y = "Density",
-       fill = NULL) +
   theme(panel.border = element_rect(colour = "black", fill = NA, size = 1),
         panel.grid = element_blank(),
-        strip.background = element_blank())
+        plot.title = element_text(size = 11),
+        strip.background = element_blank(),
+        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1))
 
-dat_mod_sample %>%
-  gather(key = predictor, value = value, -(patch:y), -(agent:country)) %>%
-  filter(predictor %in% c("magnitude.NBR", "rate.NBR", "pre.NBR")) %>%
-  mutate(predictor = case_when(
-    predictor == "magnitude.NBR" ~ "Spectral magnitude",
-    predictor == "rate.NBR" ~ "Spectral recovery",
-    predictor == "pre.NBR" ~ "Pre-dist. spectral value"
-  )) %>%
-  mutate(agent = case_when(
-    agent == "background" ~ "Background",
-    agent == "breakage" ~ "Breakage",
-    agent == "fire" ~ "Fire"
-  )) %>%
-  ggplot(., aes(x = value, fill = agent)) +
-  geom_density(alpha = 0.3, adjust = 2) +
-  facet_wrap(~predictor, scales = "free", ncol = 3) +
-  scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0)) +
-  scale_fill_manual(values = c("grey", "#004488", "#BB5566")) +
-  theme_classic() +
-  labs(x = NULL, 
-       y = "Density",
-       fill = NULL) +
-  theme(panel.border = element_rect(colour = "black", fill = NA, size = 1),
-        panel.grid = element_blank(),
-        strip.background = element_blank())
-
-dat_mod_sample %>%
-  gather(key = predictor, value = value, -(patch:y), -(agent:country)) %>%
-  filter(predictor %in% c("n_patches", "perc_t0")) %>%
-  mutate(predictor = case_when(
-    predictor == "n_patches" ~ "Number of patches",
-    predictor == "perc_t0" ~ "Percent of disturbance area"
-  )) %>%
-  mutate(agent = case_when(
-    agent == "background" ~ "Background",
-    agent == "breakage" ~ "Breakage",
-    agent == "fire" ~ "Fire"
-  )) %>%
-  ggplot(., aes(x = value, fill = agent)) +
-  geom_density(alpha = 0.3, adjust = 2) +
-  facet_wrap(~predictor, scales = "free", ncol = 2) +
-  scale_x_log10(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0)) +
-  scale_fill_manual(values = c("grey", "#004488", "#BB5566")) +
-  theme_classic() +
-  labs(x = NULL, 
-       y = "Density",
-       fill = NULL) +
-  theme(panel.border = element_rect(colour = "black", fill = NA, size = 1),
-        panel.grid = element_blank(),
-        strip.background = element_blank())
-
+ggsave("figures/predictors.pdf", p, width = 7.5, height = 7)
 
 # Write out for control
 write_csv(dat_mod_sample, "temp/dat_mod_sample.csv")
@@ -233,4 +163,29 @@ conf <- table(testdat$agent_pred_threshold, testdat$agent)
 1 - (diag(conf) / rowSums(conf)) # commission error
 1 - (diag(conf) / colSums(conf)) # omission error
 
+# Variable importance -----------------------------------------------------
 
+load(file = "temp/fit_rf.RData")
+
+p <- importance(fit.rf) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "predictor") %>%
+  ggplot(., aes(x = MeanDecreaseGini, y = reorder(predictor, MeanDecreaseGini))) +
+  geom_segment(aes(x = 0, 
+                   xend = MeanDecreaseGini, 
+                   y = reorder(predictor, MeanDecreaseGini),
+                   yend = reorder(predictor, MeanDecreaseGini))) +
+  geom_point(col = "darkgrey", size = 3) +
+  labs(x = "Variable importance", y = NULL) +
+  theme_classic() +
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 1),
+        panel.grid = element_blank(),
+        legend.position = c(0, 1),
+        legend.justification = c(0, 1),
+        legend.background = element_blank(),
+        legend.key.height = unit(0.3, "cm"),
+        legend.key.width = unit(0.5, "cm"),
+        plot.title = element_text(size = 11),
+        strip.background = element_blank())
+
+ggsave("figures/variable_importance.pdf", p, width = 5.5, height = 5.5)

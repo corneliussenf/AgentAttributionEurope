@@ -56,7 +56,7 @@ p <- ggplot() +
             filter(!agent %in% c("biotic", "landusechange")) %>%
             mutate(agent = ifelse(agent == "breakage", "storm", agent)), 
           aes(col = str_to_title(agent)),
-          size = 0.55) +
+          size = 0.15) +
   labs(x = NULL, y = NULL, col = NULL) +
   theme_void() +
   theme(plot.margin = unit(c(0.1, 0, 0, 0), "cm"),
